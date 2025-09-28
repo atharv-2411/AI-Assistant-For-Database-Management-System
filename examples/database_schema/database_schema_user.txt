@@ -1,0 +1,54 @@
+prompt: create me a database schema for a library with shelves books and orders 
+
+```sql
+-- 1. Shelves Table
+CREATE TABLE shelves (
+    shelf_id SERIAL PRIMARY KEY, -- Unique identifier for each shelf
+    name VARCHAR(100) NOT NULL, -- Name of the shelf
+    location VARCHAR(255), -- Location description of the shelf
+    capacity INT NOT NULL -- Maximum number of books that can be stored on the shelf
+);
+
+-- 2. Books Table
+CREATE TABLE books (
+    book_id SERIAL PRIMARY KEY, -- Unique identifier for each book
+    title VARCHAR(255) NOT NULL, -- Title of the book
+    author VARCHAR(100) NOT NULL, -- Author of the book
+    isbn VARCHAR(20) UNIQUE NOT NULL, -- ISBN number of the book (must be unique)
+    published_date DATE, -- Publication date of the book
+    shelf_id INT, -- Related shelf where the book is located
+    FOREIGN KEY (shelf_id) REFERENCES shelves(shelf_id) -- Foreign key constraint
+);
+
+-- 3. Members Table
+CREATE TABLE members (
+    member_id SERIAL PRIMARY KEY, -- Unique identifier for each library member
+    first_name VARCHAR(100) NOT NULL, -- Member's first name
+    last_name VARCHAR(100) NOT NULL, -- Member's last name
+    email VARCHAR(255) NOT NULL UNIQUE, -- Member's email (must be unique)
+    join_date DATE NOT NULL -- Date the member joined the library
+);
+
+-- 4. Orders Table
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY, -- Unique identifier for each order
+    member_id INT, -- Member who placed the order
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date and time of the order
+    status VARCHAR(50) NOT NULL, -- Status of the order (e.g., pending, completed)
+    FOREIGN KEY (member_id) REFERENCES members(member_id) -- Foreign key constraint
+);
+
+-- 5. Order Items Table (Many-to-many relationship between Orders and Books)
+CREATE TABLE order_items (
+    order_item_id SERIAL PRIMARY KEY, -- Unique identifier for each order item
+    order_id INT, -- Related order
+    book_id INT, -- Related book
+    quantity INT NOT NULL DEFAULT 1, -- Quantity of the book ordered
+    FOREIGN KEY (order_id) REFERENCES orders(order_id), -- Foreign key constraint
+    FOREIGN KEY (book_id) REFERENCES books(book_id) -- Foreign key constraint
+);
+
+-- Indexes for frequently searched columns
+CREATE INDEX idx_book_title ON books(title); -- Index for searching books by title
+CREATE INDEX idx_member_email ON members(email); -- Index for searching members by email
+```

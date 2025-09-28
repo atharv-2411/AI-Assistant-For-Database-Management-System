@@ -1,0 +1,44 @@
+```prisma
+model Customer {
+  customer_id Int       @id @default(autoincrement())
+  first_name  String    @db.VarChar(100)
+  last_name   String    @db.VarChar(100)
+  email       String    @unique @db.VarChar(255)
+  phone       String?   @db.VarChar(20)
+  created_at  DateTime  @default(now())
+  orders      Order[]
+}
+
+model Product {
+  product_id     Int         @id @default(autoincrement())
+  name           String      @db.VarChar(100)
+  description    String?     @db.Text
+  price          Float       @db.Decimal(10, 2)
+  size           String?     @db.VarChar(10)
+  color          String?     @db.VarChar(50)
+  stock_quantity Int         @default(0)
+  order_items    OrderItem[]
+}
+
+model Order {
+  order_id     Int        @id @default(autoincrement())
+  customer_id  Int
+  order_date   DateTime   @default(now())
+  status       String     @db.VarChar(50)
+  customer     Customer   @relation(fields: [customer_id], references: [customer_id])
+  order_items   OrderItem[]
+}
+
+model OrderItem {
+  order_item_id Int      @id @default(autoincrement())
+  order_id      Int
+  product_id    Int
+  quantity      Int      @default(1)
+  order         Order    @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  product       Product  @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+}
+
+@@index([email], name: "idx_customer_email")
+@@index([name], name: "idx_product_name")
+@@index([status], name: "idx_order_status")
+```

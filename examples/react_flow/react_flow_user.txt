@@ -1,0 +1,36 @@
+create me a react flow chart for:
+
+-- 1. Coffee Types Table
+CREATE TABLE coffee_types (
+    coffee_type_id SERIAL PRIMARY KEY, -- Unique identifier for each coffee type
+    name VARCHAR(100) NOT NULL, -- Name of the coffee type
+    description TEXT, -- Description of the coffee type
+    price NUMERIC(5,2) NOT NULL -- Price of the coffee type
+);
+
+-- 2. Employees Table
+CREATE TABLE employees (
+    employee_id SERIAL PRIMARY KEY, -- Unique identifier for each employee
+    first_name VARCHAR(100) NOT NULL, -- Employee's first name
+    last_name VARCHAR(100) NOT NULL, -- Employee's last name
+    email VARCHAR(255) NOT NULL UNIQUE, -- Employee's email (must be unique)
+    hire_date DATE NOT NULL -- Date the employee was hired
+);
+
+-- 3. Orders Table
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY, -- Unique identifier for each order
+    employee_id INT, -- Employee who took the order
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date and time of the order
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id) -- Foreign key constraint
+);
+
+-- 4. Order Items Table (Many-to-many relationship between Orders and Coffee Types)
+CREATE TABLE order_items (
+    order_item_id SERIAL PRIMARY KEY, -- Unique identifier for each order item
+    order_id INT, -- Related order
+    coffee_type_id INT, -- Related coffee type
+    quantity INT NOT NULL DEFAULT 1, -- Quantity of the coffee type ordered
+    FOREIGN KEY (order_id) REFERENCES orders(order_id), -- Foreign key constraint
+    FOREIGN KEY (coffee_type_id) REFERENCES coffee_types(coffee_type_id) -- Foreign key constraint
+);

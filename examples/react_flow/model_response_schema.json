@@ -1,0 +1,137 @@
+{
+  "name": "database_schema",
+  "strict": true,
+  "schema": {
+    "type": "object",
+    "required": [
+      "nodes",
+      "edges"
+    ],
+    "properties": {
+      "edges": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "source",
+            "target",
+            "sourceHandle",
+            "targetHandle"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Unique identifier for the edge."
+            },
+            "source": {
+              "type": "string",
+              "description": "Source node ID the edge originates from."
+            },
+            "target": {
+              "type": "string",
+              "description": "Target node ID the edge points to."
+            },
+            "sourceHandle": {
+              "type": "string",
+              "description": "Handle (field) in the source node for the connection."
+            },
+            "targetHandle": {
+              "type": "string",
+              "description": "Handle (field) in the target node for the connection."
+            }
+          },
+          "additionalProperties": false
+        },
+        "description": "List of edges representing relationships between nodes."
+      },
+      "nodes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "position",
+            "type",
+            "data"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Unique identifier for the node."
+            },
+            "data": {
+              "type": "object",
+              "required": [
+                "label",
+                "schema"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "description": "Label for the database schema."
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "title",
+                      "type"
+                    ],
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "int",
+                          "varchar",
+                          "date"
+                        ],
+                        "type": "string",
+                        "description": "The data type of the field."
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "The name of the field."
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "description": "List of fields in the database schema."
+                }
+              },
+              "additionalProperties": false
+            },
+            "type": {
+              "enum": [
+                "databaseSchema"
+              ],
+              "type": "string",
+              "description": "Type of the node, indicating it represents a database schema."
+            },
+            "position": {
+              "type": "object",
+              "required": [
+                "x",
+                "y"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "description": "X coordinate of the node in the layout."
+                },
+                "y": {
+                  "type": "number",
+                  "description": "Y coordinate of the node in the layout."
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "description": "List of nodes representing database schemas."
+      }
+    },
+    "additionalProperties": false
+  }
+}

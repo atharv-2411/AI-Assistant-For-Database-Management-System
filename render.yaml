@@ -1,0 +1,15 @@
+services:
+  - name: SQL-Mind
+    type: web
+    env: node
+    region: oregon
+    plan: free
+    repo: https://github.com/Sarthak2477/SQL-Mind
+    branch: master
+    buildCommand: npm install --legacy-peer-deps && next build
+    startCommand: npm run dev
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: DATABASE_URL
+        sync: false  

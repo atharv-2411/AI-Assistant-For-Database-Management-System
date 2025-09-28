@@ -1,0 +1,14 @@
+{
+  "name": "schema_summarizer",
+  "version": "1.0.0",
+  "main": "summarizer_example.js",
+  "scripts": {
+    "start": "node summarizer_example.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "openai": "^4.71.1"
+  }
+}

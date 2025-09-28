@@ -1,0 +1,83 @@
+{
+  "nodes": [
+    {
+      "id": "coffee_types",
+      "position": { "x": 0, "y": 0 },
+      "type": "databaseSchema",
+      "data": {
+        "label": "Coffee Types",
+        "schema": [
+          { "title": "coffee_type_id", "type": "int", "is_pk": true, "is_null": false, "if_unique": false },
+          { "title": "name", "type": "varchar", "is_pk": false, "is_null": false, "if_unique": false },
+          { "title": "description", "type": "text", "is_pk": false, "is_null": true, "if_unique": false },
+          { "title": "price", "type": "numeric", "is_pk": false, "is_null": false, "if_unique": false }
+        ]
+      }
+    },
+    {
+      "id": "employees",
+      "position": { "x": 300, "y": 0 },
+      "type": "databaseSchema",
+      "data": {
+        "label": "Employees",
+        "schema": [
+          { "title": "employee_id", "type": "int", "is_pk": true, "is_null": false, "if_unique": false },
+          { "title": "first_name", "type": "varchar", "is_pk": false, "is_null": false, "if_unique": false },
+          { "title": "last_name", "type": "varchar", "is_pk": false, "is_null": false, "if_unique": false },
+          { "title": "email", "type": "varchar", "is_pk": false, "is_null": false, "if_unique": true },
+          { "title": "hire_date", "type": "date", "is_pk": false, "is_null": false, "if_unique": false }
+        ]
+      }
+    },
+    {
+      "id": "orders",
+      "position": { "x": 600, "y": 0 },
+      "type": "databaseSchema",
+      "data": {
+        "label": "Orders",
+        "schema": [
+          { "title": "order_id", "type": "int", "is_pk": true, "is_null": false, "if_unique": false },
+          { "title": "employee_id", "type": "int", "is_pk": false, "is_null": true, "if_unique": false },
+          { "title": "order_date", "type": "timestamp", "is_pk": false, "is_null": false, "if_unique": false }
+        ]
+      }
+    },
+    {
+      "id": "order_items",
+      "position": { "x": 900, "y": 0 },
+      "type": "databaseSchema",
+      "data": {
+        "label": "Order Items",
+        "schema": [
+          { "title": "order_item_id", "type": "int", "is_pk": true, "is_null": false, "if_unique": false },
+          { "title": "order_id", "type": "int", "is_pk": false, "is_null": true, "if_unique": false },
+          { "title": "coffee_type_id", "type": "int", "is_pk": false, "is_null": true, "if_unique": false },
+          { "title": "quantity", "type": "int", "is_pk": false, "is_null": false, "if_unique": false }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "orders-employees",
+      "source": "orders",
+      "target": "employees",
+      "sourceHandle": "employee_id",
+      "targetHandle": "employee_id"
+    },
+    {
+      "id": "order_items-orders",
+      "source": "order_items",
+      "target": "orders",
+      "sourceHandle": "order_id",
+      "targetHandle": "order_id"
+    },
+    {
+      "id": "order_items-coffee_types",
+      "source": "order_items",
+      "target": "coffee_types",
+      "sourceHandle": "coffee_type_id",
+      "targetHandle": "coffee_type_id"
+    }
+  ]
+}

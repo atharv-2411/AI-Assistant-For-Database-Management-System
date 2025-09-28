@@ -1,0 +1,136 @@
+{
+  "coffee_types": [
+    {
+      "coffee_type_id": 1,
+      "name": "Espresso",
+      "description": "A strong and concentrated coffee brewed by forcing hot water through finely-ground coffee.",
+      "price": 2.50
+    },
+    {
+      "coffee_type_id": 2,
+      "name": "Latte",
+      "description": "A creamy coffee made with espresso and steamed milk, topped with a small amount of milk foam.",
+      "price": 3.50
+    },
+    {
+      "coffee_type_id": 3,
+      "name": "Cappuccino",
+      "description": "A coffee drink made with equal parts espresso, steamed milk, and milk foam.",
+      "price": 4.00
+    },
+    {
+      "coffee_type_id": 4,
+      "name": "Americano",
+      "description": "A diluted espresso made by adding hot water to espresso shots.",
+      "price": 2.80
+    },
+    {
+      "coffee_type_id": 5,
+      "name": "Mocha",
+      "description": "A delicious blend of espresso, steamed milk, and chocolate syrup, often topped with whipped cream.",
+      "price": 4.50
+    }
+  ],
+  "employees": [
+    {
+      "employee_id": 1,
+      "first_name": "Alice",
+      "last_name": "Johnson",
+      "email": "alice.johnson@example.com",
+      "hire_date": "2020-05-15"
+    },
+    {
+      "employee_id": 2,
+      "first_name": "Bob",
+      "last_name": "Smith",
+      "email": "bob.smith@example.com",
+      "hire_date": "2019-08-22"
+    },
+    {
+      "employee_id": 3,
+      "first_name": "Charlie",
+      "last_name": "Davis",
+      "email": "charlie.davis@example.com",
+      "hire_date": "2021-01-10"
+    },
+    {
+      "employee_id": 4,
+      "first_name": "Diana",
+      "last_name": "Garcia",
+      "email": "diana.garcia@example.com",
+      "hire_date": "2022-03-30"
+    },
+    {
+      "employee_id": 5,
+      "first_name": "Evan",
+      "last_name": "Martinez",
+      "email": "evan.martinez@example.com",
+      "hire_date": "2018-11-25"
+    }
+  ],
+  "orders": [
+    {
+      "order_id": 1,
+      "employee_id": 1,
+      "order_date": "2023-10-01T10:00:00"
+    },
+    {
+      "order_id": 2,
+      "employee_id": 2,
+      "order_date": "2023-10-01T11:30:00"
+    },
+    {
+      "order_id": 3,
+      "employee_id": 1,
+      "order_date": "2023-10-01T12:15:00"
+    },
+    {
+      "order_id": 4,
+      "employee_id": 3,
+      "order_date": "2023-10-01T14:00:00"
+    },
+    {
+      "order_id": 5,
+      "employee_id": 4,
+      "order_date": "2023-10-01T15:45:00"
+    }
+  ],
+  "order_items": [
+    {
+      "order_item_id": 1,
+      "order_id": 1,
+      "coffee_type_id": 1,
+      "quantity": 2
+    },
+    {
+      "order_item_id": 2,
+      "order_id": 1,
+      "coffee_type_id": 3,
+      "quantity": 1
+    },
+    {
+      "order_item_id": 3,
+      "order_id": 2,
+      "coffee_type_id": 2,
+      "quantity": 3
+    },
+    {
+      "order_item_id": 4,
+      "order_id": 3,
+      "coffee_type_id": 5,
+      "quantity": 4
+    },
+    {
+      "order_item_id": 5,
+      "order_id": 4,
+      "coffee_type_id": 4,
+      "quantity": 2
+    },
+    {
+      "order_item_id": 6,
+      "order_id": 5,
+      "coffee_type_id": 1,
+      "quantity": 1
+    }
+  ]
+}
