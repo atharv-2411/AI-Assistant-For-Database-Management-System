@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Trino from "trino-client";
+import * as Trino from "trino-client";
 
 interface TrinoConnectionRequest {
   username: string;
@@ -9,14 +9,14 @@ interface TrinoConnectionRequest {
   http_scheme?: string;
 }
 
-const connections: Record<string, trino.Client> = {};
+const connections: Record<string, Trino.Client> = {};
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const { username, password, host, port = 443, http_scheme = "https" } = (await req.json()) as TrinoConnectionRequest;
 
     const connectionId = `${host}:${username}`;
-    connections[connectionId] = new Trino.create({
+    connections[connectionId] = new Trino.Client({
       server: `${http_scheme}://${host}:${port}`,
       user: username,
       password: password,

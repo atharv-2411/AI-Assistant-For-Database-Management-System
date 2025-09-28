@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -15,67 +15,242 @@ interface ConnectivityModalProps {
   type: 'trino' | 'spark';
 }
 
+interface ConnectionForm {
+  host: string;
+  port: string;
+  username: string;
+  password: string;
+  catalog?: string;
+  schema?: string;
+  // Spark specific fields
+  masterUrl?: string;
+  appName?: string;
+  deployMode?: string;
+}
+
 export function ConnectivityModal({ isOpen, onClose, type }: ConnectivityModalProps) {
-  const handleConnect = (event: React.FormEvent) => {
+  const [formData, setFormData] = useState<ConnectionForm>({
+    host: '',
+    port: type === 'trino' ? '8080' : '7077',
+    username: '',
+    password: '',
+    catalog: 'hive',
+    schema: 'default',
+    masterUrl: 'spark://localhost:7077',
+    appName: 'My Spark App',
+    deployMode: 'client'
+  });
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
+
+  const handleInputChange = (field: keyof ConnectionForm) => (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: event.target.value
+    }));
+    // Clear previous error/success messages
+    setError('');
+    setSuccess('');
+  };
+
+  const handleConnect = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Handle connection logic here
-    console.log('Connecting to', type);
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      if (type === 'trino') {
+        // Validate required fields for Trino
+        if (!formData.host || !formData.username) {
+          throw new Error('Host and username are required');
+        }
+
+        const response = await fetch('/api/trino-connect', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            host: formData.host,
+            port: parseInt(formData.port) || 8080,
+            username: formData.username,
+            password: formData.password,
+            catalog: formData.catalog,
+            schema: formData.schema,
+            http_scheme: 'http' // You can make this configurable
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Connection failed');
+        }
+
+        setSuccess('Successfully connected to Trino!');
+        console.log('Trino connection established:', result.connection_id);
+        
+        // Auto-close modal after successful connection
+        setTimeout(() => {
+          handleClose();
+        }, 2000);
+
+      } else {
+        // Spark connection logic (placeholder - implement based on your Spark setup)
+        console.log('Connecting to Spark with:', formData);
+        setSuccess('Spark connection functionality is not implemented yet');
+        setTimeout(() => {
+          handleClose();
+        }, 2000);
+      }
+
+    } catch (err: any) {
+      console.error('Connection error:', err);
+      setError(err.message || 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setFormData({
+      host: '',
+      port: type === 'trino' ? '8080' : '7077',
+      username: '',
+      password: '',
+      catalog: 'hive',
+      schema: 'default',
+      masterUrl: 'spark://localhost:7077',
+      appName: 'My Spark App',
+      deployMode: 'client'
+    });
+    setError('');
+    setSuccess('');
     onClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Connect to Database</DialogTitle>
+          <DialogTitle>Connect to {type === 'trino' ? 'Trino' : 'Spark'}</DialogTitle>
           <DialogDescription>
             {type === 'trino' 
               ? 'Enter your Trino connection details to establish a connection.'
               : 'Enter your Spark connection details to establish a connection.'}
           </DialogDescription>
         </DialogHeader>
+        
         <form onSubmit={handleConnect} className="space-y-4">
           {type === 'trino' ? (
             <>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Host</label>
-                <Input placeholder="localhost" />
+                <label className="text-sm font-medium text-white">Host *</label>
+                <Input 
+                  placeholder="localhost" 
+                  value={formData.host}
+                  onChange={handleInputChange('host')}
+                  required
+                />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Port</label>
-                <Input placeholder="8080" type="number" />
+                <label className="text-sm font-medium text-white">Port</label>
+                <Input 
+                  placeholder="8080" 
+                  type="number" 
+                  value={formData.port}
+                  onChange={handleInputChange('port')}
+                />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Catalog</label>
-                <Input placeholder="hive" />
+                <label className="text-sm font-medium text-white">Username *</label>
+                <Input 
+                  placeholder="your-username" 
+                  value={formData.username}
+                  onChange={handleInputChange('username')}
+                  required
+                />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Schema</label>
-                <Input placeholder="default" />
+                <label className="text-sm font-medium text-white">Password</label>
+                <Input 
+                  placeholder="your-password" 
+                  type="password"
+                  value={formData.password}
+                  onChange={handleInputChange('password')}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Catalog</label>
+                <Input 
+                  placeholder="hive" 
+                  value={formData.catalog}
+                  onChange={handleInputChange('catalog')}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Schema</label>
+                <Input 
+                  placeholder="default" 
+                  value={formData.schema}
+                  onChange={handleInputChange('schema')}
+                />
               </div>
             </>
           ) : (
             <>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Spark Master URL</label>
-                <Input placeholder="spark://localhost:7077" />
+                <label className="text-sm font-medium text-white">Spark Master URL</label>
+                <Input 
+                  placeholder="spark://localhost:7077" 
+                  value={formData.masterUrl}
+                  onChange={handleInputChange('masterUrl')}
+                />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Application Name</label>
-                <Input placeholder="My Spark App" />
+                <label className="text-sm font-medium text-white">Application Name</label>
+                <Input 
+                  placeholder="My Spark App" 
+                  value={formData.appName}
+                  onChange={handleInputChange('appName')}
+                />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Deploy Mode</label>
-                <Input placeholder="client" />
+                <label className="text-sm font-medium text-white">Deploy Mode</label>
+                <Input 
+                  placeholder="client" 
+                  value={formData.deployMode}
+                  onChange={handleInputChange('deployMode')}
+                />
               </div>
             </>
           )}
+          
+          {/* Error Message */}
+          {error && (
+            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+              {error}
+            </div>
+          )}
+          
+          {/* Success Message */}
+          {success && (
+            <div className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-md">
+              {success}
+            </div>
+          )}
+          
           <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={handleClose} disabled={loading}>
               Cancel
             </Button>
-            <Button type="submit">
-              Connect
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Connecting...' : 'Connect'}
             </Button>
           </div>
         </form>
