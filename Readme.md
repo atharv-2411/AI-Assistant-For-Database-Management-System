@@ -19,38 +19,7 @@ SQL-Mind is an AI-powered SQL assistant designed to simplify database query gene
 - **Animations**: Framer Motion
 - **Backend**: Node.js (Assumed, as there are no specifics for the backend in the repository)
 
-## Installation
 
-### Prerequisites
-
-Ensure you have the following tools installed:
-
-- Node.js (version 14.x or above)
-- npm 
-
-### Steps
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Sarthak2477/SQL-Mind.git
-   ```
-
-2. Navigate to the project directory:
-   ```bash
-   cd SQL-Mind
-   ```
-
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-5. Open your browser and go to [http://localhost:3000](http://localhost:3000).
 
 ## Usage
 
