@@ -17,6 +17,7 @@ import {
   Lock,
   Eye,
   EyeOff,
+  Plus,
 } from "lucide-react";
 
 // LoginModal component (unchanged from your input, should be included here)
@@ -182,7 +183,9 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [projects, setProjects] = useState<any[]>([]);
 
   // Login Modal States
   const [isSignUp, setIsSignUp] = useState(false);
@@ -201,7 +204,13 @@ export default function HomePage() {
     if (typeof window !== "undefined") {
       const savedUser = localStorage.getItem("currentUser");
       if (savedUser) {
-        setCurrentUser(JSON.parse(savedUser));
+        const userData = JSON.parse(savedUser);
+        setCurrentUser(userData);
+        
+        // Load user projects
+        const allProjects = JSON.parse(localStorage.getItem("projects") || "[]");
+        const userProjects = allProjects.filter((p: any) => p.userId === userData.id);
+        setProjects(userProjects);
       }
     }
 
@@ -246,9 +255,7 @@ export default function HomePage() {
         setFormData({ name: "", email: "", password: "" });
 
         // Redirect after successful signup
-        setTimeout(() => {
-          window.location.href = `/in/${projectId}`;
-        }, 500);
+        window.location.reload();
       } else {
         // Sign In Logic
         const users = JSON.parse(localStorage.getItem("users") || "[]");
@@ -264,9 +271,7 @@ export default function HomePage() {
           setFormData({ name: "", email: "", password: "" });
 
           // Redirect after successful login
-          setTimeout(() => {
-            window.location.href = `/in/${projectId}`;
-          }, 500);
+          window.location.reload();
         } else {
           setError("Invalid email or password");
         }
@@ -283,11 +288,155 @@ export default function HomePage() {
   const handleGetStarted = useCallback(() => {
     if (currentUser) {
       // Direct redirect for logged-in users
-      window.location.href = `/in/${projectId}`;
+      window.location.href = `/`;
     } else {
       setIsLoginModalOpen(true);
     }
-  }, [currentUser, projectId]);
+  }, [currentUser]);
+
+  // If user is logged in, show dashboard instead of landing page
+  if (mounted && !loading && currentUser) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white">
+        <nav className="bg-gray-800 border-b border-gray-700 px-4 py-3">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-white">Syntra</h1>
+            <div className="flex items-center gap-4">
+              <span className="text-white">Welcome, {currentUser.name}</span>
+              <button
+                onClick={handleLogout}
+                className="text-gray-300 hover:text-white flex items-center gap-2"
+              >
+                <LogOut size={16} />
+                Logout
+              </button>
+            </div>
+          </div>
+        </nav>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold">Dashboard</h1>
+              <p className="text-gray-400">Welcome back, {currentUser.name}</p>
+            </div>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center gap-2"
+            >
+              <Plus size={20} />
+              New Project
+            </button>
+          </div>
+          {projects.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.map((project) => (
+                <div key={project.id} className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                  <div className="flex justify-between items-start mb-4">
+                    <Database className="text-blue-400" size={24} />
+                    <button
+                      onClick={() => window.location.href = `/in/${project.id}`}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      Open
+                    </button>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold mb-2 text-white">{project.name}</h3>
+                  <p className="text-gray-400 text-sm mb-4">{project.description}</p>
+                  
+                  <div className="flex items-center text-xs text-gray-500">
+                    <span>{new Date(project.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Database className="mx-auto text-gray-600 mb-4" size={48} />
+              <h3 className="text-xl font-semibold mb-2">No projects yet</h3>
+              <p className="text-gray-400 mb-4">Create your first project to get started</p>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg"
+              >
+                Create Project
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {/* Project Creation Modal */}
+        {showCreateModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4">
+              <h2 className="text-xl font-bold mb-4 text-white">Create New Project</h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-white">Project Name</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
+                    placeholder="Enter project name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-white">Description</label>
+                  <textarea
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 h-20 text-white"
+                    placeholder="Enter project description"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    if (!formData.name.trim()) return;
+                    const projectId = Date.now().toString();
+                    const project = {
+                      id: projectId,
+                      name: formData.name,
+                      description: formData.email,
+                      createdAt: new Date().toISOString(),
+                      lastModified: new Date().toISOString(),
+                      userId: currentUser.id,
+                      schema: '',
+                      nodes: [],
+                      edges: []
+                    };
+                    const allProjects = JSON.parse(localStorage.getItem('projects') || '[]');
+                    allProjects.push(project);
+                    localStorage.setItem('projects', JSON.stringify(allProjects));
+                    setFormData({ name: '', email: '', password: '' });
+                    setShowCreateModal(false);
+                    window.location.href = `/in/${projectId}`;
+                  }}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded-lg text-white"
+                >
+                  Create
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    setFormData({ name: '', email: '', password: '' });
+                  }}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 py-2 rounded-lg text-white"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   if (!mounted) return null;
 

@@ -18,6 +18,7 @@ interface InspectorState {
   setMainSchemaText: (_:string) => void;
   addToMainSchemaText: (_:string) => void;
   clearMainSchemaText: () => void;
+  resetStore: () => void;
 
   diffSchemaText: string;
   setDiffSchemaText: (_:string) => void;
@@ -58,6 +59,16 @@ const useInspectorStore = create<InspectorState>()(set => ({
   setMainSchemaText: (newSchemaText) => set(state => ({ mainSchemaText: newSchemaText})),
   addToMainSchemaText: (newCharacter) => set(state => ({ mainSchemaText: state.mainSchemaText + newCharacter})),
   clearMainSchemaText: () => set(_ => ({ mainSchemaText: "" })),
+  resetStore: () => set(_ => ({ 
+    mainSchemaText: "", 
+    diffSchemaText: "", 
+    documentationText: "", 
+    mockData: null,
+    mainCodeDiffMode: false,
+    buffering: false,
+    documentationBuffering: false,
+    isExplaining: false
+  })),
   
   buffering: false,
   setBuffering: (val) => set(_ => ({ buffering: val })),

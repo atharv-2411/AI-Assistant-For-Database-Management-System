@@ -66,14 +66,13 @@ export default function ExportButton({
   return (
     <div className="flex items-center gap-2">
       {/* Image Download Button */}
-      <button
+      <div
         onClick={downloadDiagram}
-        disabled={isExporting}
-        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors"
+        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors cursor-pointer"
       >
         <Download size={16} />
         {isExporting ? 'Downloading...' : 'Download PNG'}
-      </button>
+      </div>
       
       {/* Code Export Dropdown */}
       <div className="relative">

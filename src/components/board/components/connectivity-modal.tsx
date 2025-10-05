@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 interface ConnectivityModalProps {
   isOpen: boolean;
   onClose: () => void;
-  type: 'trino' | 'spark';
+  type: 'trino' | 'spark' | 'mysql' | 'postgresql';
 }
 
 interface ConnectionForm {
@@ -29,9 +29,18 @@ interface ConnectionForm {
 }
 
 export function ConnectivityModal({ isOpen, onClose, type }: ConnectivityModalProps) {
+  const getDefaultPort = () => {
+    switch(type) {
+      case 'mysql': return '3306';
+      case 'postgresql': return '5432';
+      case 'trino': return '8080';
+      default: return '7077';
+    }
+  };
+
   const [formData, setFormData] = useState<ConnectionForm>({
     host: '',
-    port: type === 'trino' ? '8080' : '7077',
+    port: getDefaultPort(),
     username: '',
     password: '',
     catalog: 'hive',
@@ -64,7 +73,31 @@ export function ConnectivityModal({ isOpen, onClose, type }: ConnectivityModalPr
     setSuccess('');
 
     try {
-      if (type === 'trino') {
+      if (type === 'mysql' || type === 'postgresql') {
+        if (!formData.host || !formData.username || !formData.password) {
+          throw new Error('Host, username, and password are required');
+        }
+
+        const response = await fetch('/api/db-connect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type,
+            host: formData.host,
+            port: parseInt(formData.port),
+            username: formData.username,
+            password: formData.password,
+            database: formData.schema
+          })
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Connection failed');
+        
+        setSuccess(`Successfully connected to ${type.toUpperCase()}!`);
+        setTimeout(() => handleClose(), 2000);
+        
+      } else if (type === 'trino') {
         // Validate required fields for Trino
         if (!formData.host || !formData.username) {
           throw new Error('Host and username are required');
@@ -138,16 +171,62 @@ export function ConnectivityModal({ isOpen, onClose, type }: ConnectivityModalPr
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Connect to {type === 'trino' ? 'Trino' : 'Spark'}</DialogTitle>
+          <DialogTitle>Connect to {type.charAt(0).toUpperCase() + type.slice(1)}</DialogTitle>
           <DialogDescription>
-            {type === 'trino' 
-              ? 'Enter your Trino connection details to establish a connection.'
-              : 'Enter your Spark connection details to establish a connection.'}
+            Enter your {type} connection details to establish a connection.
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleConnect} className="space-y-4">
-          {type === 'trino' ? (
+          {(type === 'mysql' || type === 'postgresql') ? (
+            <>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Host *</label>
+                <Input 
+                  placeholder="localhost" 
+                  value={formData.host}
+                  onChange={handleInputChange('host')}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Port</label>
+                <Input 
+                  placeholder={getDefaultPort()} 
+                  type="number" 
+                  value={formData.port}
+                  onChange={handleInputChange('port')}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Database Name</label>
+                <Input 
+                  placeholder="my_database" 
+                  value={formData.schema}
+                  onChange={handleInputChange('schema')}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Username *</label>
+                <Input 
+                  placeholder="username" 
+                  value={formData.username}
+                  onChange={handleInputChange('username')}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Password *</label>
+                <Input 
+                  placeholder="password" 
+                  type="password"
+                  value={formData.password}
+                  onChange={handleInputChange('password')}
+                  required
+                />
+              </div>
+            </>
+          ) : type === 'trino' ? (
             <>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-white">Host *</label>

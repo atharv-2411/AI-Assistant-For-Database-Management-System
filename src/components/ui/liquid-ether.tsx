@@ -135,7 +135,21 @@ function LiquidEther({
         this.container = container;
         this.pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
         this.resize();
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        // Check WebGL availability first
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) {
+          console.warn('WebGL not supported, skipping renderer creation');
+          return;
+        }
+        
+        try {
+          this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        } catch (error) {
+          console.warn('WebGL renderer creation failed:', error);
+          return;
+        }
+        if (!this.renderer) return;
         // Always transparent
         this.renderer.autoClear = false;
         this.renderer.setClearColor(new THREE.Color(0x000000), 0);
@@ -551,7 +565,12 @@ function LiquidEther({
         this.scene = new THREE.Scene();
         this.camera = new THREE.Camera();
         if (this.uniforms) {
+          try {
           this.material = new THREE.RawShaderMaterial(this.props.material);
+        } catch (error) {
+          console.warn('Shader compilation failed, using fallback:', error);
+          this.material = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 });
+        }
           this.geometry = new THREE.PlaneGeometry(2, 2);
           this.plane = new THREE.Mesh(this.geometry, this.material);
           this.scene.add(this.plane);
@@ -1029,7 +1048,7 @@ function LiquidEther({
         if (this.autoDriver) this.autoDriver.update();
         Mouse.update();
         Common.update();
-        this.output.update();
+        if (this.output) this.output.update();
       }
       loop() {
         if (!this.running) return;

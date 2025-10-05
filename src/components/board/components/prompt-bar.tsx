@@ -14,6 +14,7 @@ import useFlowStore from '@/stores/flow';
 import useLoaderStore, { ENUM__LOADER_TO_MAIN_CODE } from '@/stores/loader';
 import SQLToReactFlowParser from '@/lib/react-flow-parser';
 import { sleep } from '@/lib/utils';
+import StarBorder from '@/components/StarBorder';
 
 type Props = {}
 
@@ -83,13 +84,13 @@ export default function PromptBar({}: Props) {
     onSubmit={handlePromptSubmit}
     className='
       absolute 
-      w-[32rem] min-h-14 
-      bottom-4 left-1/2 -translate-x-1/2 
+      w-[40rem] min-h-16 
+      bottom-8 left-1/2 -translate-x-1/2 
       bg-zinc-900 
       rounded-xl
       m-[20px]
       flex items-center justify-between
-      px-4
+      px-6
       overflow-hidden
       z-10
     '>
@@ -97,6 +98,7 @@ export default function PromptBar({}: Props) {
       {
         buffering ? <LoaderCircle size={18} className='text-zinc-700 animate-spin' /> : <Zap className='text-zinc-700' size={18} />
       }
+
       <Input 
         value={prompt}
         onChange={e => setPrompt(e.target.value)}

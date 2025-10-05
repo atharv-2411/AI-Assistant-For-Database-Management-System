@@ -125,6 +125,7 @@ export default function NodeRenderer({
         pixelRatio: 2,
         quality: 1,
         cacheBust: true,
+        skipFonts: true,
         filter: (node) => {
           return !node.classList?.contains('react-flow__controls') && 
                  !node.classList?.contains('react-flow__minimap');
@@ -196,7 +197,7 @@ export default function NodeRenderer({
         <div className={`flex gap-2 ${mainSchemaText.length > 0 ? "opacity-1 -translate-y-0" : "opacity-0 -translate-y-5"} transition-all`}>
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger>
+              <TooltipTrigger asChild>
                 <button
                   onClick={downloadDiagram}
                   className="px-3 py-2 rounded-md flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
