@@ -30,6 +30,7 @@
     "framer-motion": "^11.18.2",
     "groq-sdk": "^0.16.0",
     "html-to-image": "^1.11.11",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.454.0",
     "next": "15.0.3",
     "openai": "^4.71.1",
